@@ -8,6 +8,8 @@ Strips nodes from XML files.
 $ ./stripper path node [node]
 ```
 
+Output appears in `./stripped/`.
+
 ## Building
 
 ```
