@@ -49,7 +49,7 @@ func main() {
   // Get command line arguments
   args := os.Args[1:]
   if len(args) < 2 {
-    fmt.Println("Usage:\n./stripped path node [node]")
+    fmt.Println("Usage:\n$ stripper path node [node]")
     os.Exit(2)
   }
 
