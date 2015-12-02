@@ -5,7 +5,7 @@ Strips nodes from XML files.
 ## Usage
 
 ```
-$ ./stripper [path to file]
+$ ./stripper path node [node]
 ```
 
 ## Building

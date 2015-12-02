@@ -15,25 +15,41 @@ func check(e error) {
   }
 }
 
-func replace(source string) (replaced string) {
+func replace(source string, nodes []string) (replaced string, err error) {
 
-  // Define regex
-  reg, err := regexp.Compile("(<pproTicks[a-zA-Z]+>[0-9]+</pproTicks[a-zA-Z]+>)")
-  check(err)
+  replaced = source
 
-  //found := reg.FindAllString(source, -1)
-  //fmt.Println(found)
+  for i := 0; i < len(nodes); i++ {
 
-  replaced = reg.ReplaceAllString(source, "")
-  return replaced
+    // Get node
+    node := nodes[i]
+    fmt.Printf("Replacing %s\n", node)
+
+    // Define regex
+    reg, err := regexp.Compile("(<" + node + ">[^<>]+</" + node + ">)")
+    if err != nil {
+      return "", err
+    }
+    replaced = reg.ReplaceAllString(replaced, "")
+
+  }
+
+  // Remove extra new lines
+  reg, err := regexp.Compile("(\t+\n\t+\n)")
+  if err != nil {
+    return "", err
+  }
+  replaced = reg.ReplaceAllString(replaced, "")
+
+  return replaced, nil
 }
 
 func main() {
 
   // Get command line arguments
   args := os.Args[1:]
-  if len(args) < 1 {
-    fmt.Println("You need to add the path to a file to find/replace in")
+  if len(args) < 2 {
+    fmt.Println("Usage:\n./stripped path node [node]")
     os.Exit(2)
   }
 
@@ -42,9 +58,12 @@ func main() {
   dat, readErr := ioutil.ReadFile(inputPath)
   check(readErr)
 
+  // Get nodes
+  nodes := args[1:]
+
   // Find replace
-  output := replace(string(dat))
-  fmt.Println(output)
+  output, err := replace(string(dat), nodes)
+  check(err)
 
   // Create output directory
   outputPath := "." + string(filepath.Separator) + "stripped"
@@ -55,4 +74,6 @@ func main() {
   _, filename := path.Split(inputPath)
   writeErr := ioutil.WriteFile(outputPath + string(filepath.Separator) + filename, byteOutput, 0644)
   check(writeErr)
+
+  fmt.Println("All done")
 }
